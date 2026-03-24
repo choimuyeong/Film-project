@@ -9,11 +9,11 @@ class SentimentService:
     def __init__(self):
         """
         감성 분석을 위한 파이프라인과 모델을 초기화합니다.
-        사용 모델: matthewburke/koelectra-small-v3-nsmc (네이버 영화 리뷰로 파인튜닝된 모델)
+        사용 모델: daekeun-ml/koelectra-small-v3-nsmc (네이버 영화 리뷰로 파인튜닝된 모델)
         """
         self.pipe = pipeline(
             "sentiment-analysis", 
-            model="matthewburke/koelectra-small-v3-nsmc"
+            model="daekeun-ml/koelectra-small-v3-nsmc"
         )
         
     def analyze(self, text: str) -> dict:
@@ -31,11 +31,14 @@ class SentimentService:
         # 모델 예측 실행
         result = self.pipe(text)[0]
 
+        # print(f"🔍 원본 결과: {result}")  # 디버깅용 상태체크 출력
+
         # 오타 및 로직 수정: 모델의 실제 라벨값과 비교 (보통 'LABEL_1' 또는 'positive' 등 모델마다 다름)
         # KR-FinBert-SC의 경우 보통 'OPINION' 관련 라벨을 사용하므로 확인이 필요하지만, 
         # 작성하신 로직 흐름을 유지하며 오타를 수정했습니다.
         raw_label = result["label"].lower()
-        sentiment = "positive" if "pos" in raw_label else "negative"
+
+        sentiment = "positive" if result["label"] == "1" else "negative"
 
         return {
             "sentiment": sentiment,

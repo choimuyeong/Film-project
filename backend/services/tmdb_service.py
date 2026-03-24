@@ -38,6 +38,8 @@ class TMDBService:
                 f"{TMDB_BASE_URL}/search/movie",
                 params={**self.params, "query": query, "page": page}
             )
+            # print(f"🔍 상태코드: {response.status_code}")  # 디버깅용 상태체크 출력
+            # print(f"🔍 응답결과: {response.json()}")       # 디버깅용 상태체크 출력
             data = response.json()
 
         return [
