@@ -10,6 +10,7 @@ services:
       DATABASE_URL: sqlite:////data/movie_review.db
     volumes:
       - backend_data:/data
+      - ./backend/data:/app/data:ro
     restart: unless-stopped
 
   frontend:

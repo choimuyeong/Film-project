@@ -4,9 +4,17 @@ const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL || '/api',
 });
 
+export type SearchMode = 'title' | 'semantic';
+
 // 영화 검색
-export const searchMovies = async (query: string) => {
-  const response = await api.get('/movies/search', { params: { q: query } });
+export const searchMovies = async (
+  query: string,
+  mode: SearchMode = 'title',
+  topK: number = 10
+) => {
+  const response = await api.get('/movies/search', {
+    params: { q: query, mode, top_k: topK },
+  });
   return response.data;
 };
 

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { searchMovies } from '../api/movieApi';
+import { searchMovies, SearchMode } from '../api/movieApi';
 
 interface Movie {
   id: number;
@@ -13,6 +13,7 @@ interface Movie {
 
 export default function SearchPage() {
   const [query, setQuery] = useState('');
+  const [mode, setMode] = useState<SearchMode>('semantic');
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ export default function SearchPage() {
     if (!query.trim()) return;
     setLoading(true);
     try {
-      const data = await searchMovies(query);
+      const data = await searchMovies(query, mode, 20);
       setMovies(data);
     } catch {
       alert('검색 중 오류가 발생했습니다.');
@@ -46,12 +47,36 @@ export default function SearchPage() {
           </div>
         )}
 
+        {/* 검색 모드 */}
+        <div className="flex items-center gap-2 mb-3">
+          <button
+            className={`px-3 py-1.5 rounded-md text-sm border transition-colors ${
+              mode === 'title'
+                ? 'bg-[#00ff88] text-black border-[#00ff88]'
+                : 'bg-[#1a1a1a] text-gray-300 border-[#333] hover:border-[#00ff88]'
+            }`}
+            onClick={() => setMode('title')}
+          >
+            제목 검색
+          </button>
+          <button
+            className={`px-3 py-1.5 rounded-md text-sm border transition-colors ${
+              mode === 'semantic'
+                ? 'bg-[#00ff88] text-black border-[#00ff88]'
+                : 'bg-[#1a1a1a] text-gray-300 border-[#333] hover:border-[#00ff88]'
+            }`}
+            onClick={() => setMode('semantic')}
+          >
+            내용 검색
+          </button>
+        </div>
+
         {/* 검색창 */}
         <div className="flex gap-3 mb-8">
           <input
             className="flex-1 bg-[#1a1a1a] text-white px-5 py-3 rounded-lg text-base outline-none placeholder-gray-600 focus:ring-2 focus:ring-[#00ff88] transition border border-[#333]"
             type="text"
-            placeholder="영화 제목을 검색하세요"
+            placeholder={mode === 'semantic' ? '줄거리/내용으로 검색하세요' : '영화 제목을 검색하세요'}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
